@@ -98,7 +98,7 @@ void loop() {
   Serial.println(hum);
 
 	// apertura  y cierre de la ventana con el servo motor
-	if(temp > 27 ) {
+	if((temp >= 30 && temp <= 39) || temp > 40) {
 			for (pos = 90; pos >= 0; pos -= 1 ) {
 			myservo.write(0);
 				delay(15);
@@ -106,7 +106,7 @@ void loop() {
 			Serial.println("ventana abierta");
 			state_window = true;
 
-	} else {
+	} else if ((temp <= -1 && temp <= 8) || (temp >= 9 && temp <= 29)) {
 			for (pos = 90; pos <= 90; pos += 1) {
 			myservo.write(90);
 				delay(15);
@@ -125,11 +125,15 @@ void loop() {
       digitalWrite(pinBomba, HIGH); // el pin 18 activa la alimentacion de la bomba
       state_pump = true;
   }
-  else if (soilmoisturepercent > 50) { //porcentaje de hSpara prender la bomba
+  else if ((soilmoisturepercent >= 50) && (soilmoisturepercent <= 80)) { //porcentaje de hSpara prender la bomba
       Serial.println("mojado, Apagar bomba");
       digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
       state_pump = false;
-  }
+  } if (soilmoisturepercent >= 81 && soilmoisturepercent <= 100) {
+		Serial.println("inundado, Apagar bomba");
+		digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
+		state_pump = false;
+	}
 
   if(soilmoisturepercent >= 100) {
     Serial.println("100 %");
@@ -146,11 +150,11 @@ void loop() {
     delay(delaySoilSensor);
 
 	//Prendido apagado del cooler segun la temperatura y humedad
-	if (hum < 60) {
+	if ((hum >= 0 && hum <= 49) || (hum >= 50 && hum <= 70) ) {
 			Serial.println("cooler apagado");
 	    digitalWrite(pinCooler, HIGH);
 	    state_cooler = false;
-	} else {
+	} else if (hum >= 71 && hum <= 100) {
 			Serial.println("cooler prendido");
 			digitalWrite(pinCooler, LOW);
 			state_cooler = true;

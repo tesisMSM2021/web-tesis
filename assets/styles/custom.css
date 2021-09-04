@@ -1,0 +1,47 @@
+.main-section {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid;
+  border-color: rgba(204, 204, 204, 0.4);
+  margin-top: 20px;
+  border-radius: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.central {
+  margin-top: 50px;
+}
+
+.header {
+  width: auto;
+}
+
+.form-group {
+    margin-bottom: 0rem !important;
+}
+
+h3 {
+  font-size: 13px;
+  color: #ccc;
+  font-weight: normal;
+  margin-bottom: 0px;
+  display: initial;
+  width: auto;
+}
+
+.box, .box-color {
+    margin-bottom: 0 !important;
+}
+
+#temp-alert {
+  display: none;
+}
+
+#hum-alert {
+  display: none;
+}
+
+#soil-alert {
+  display: none;
+}

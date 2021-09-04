@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+}
+.container-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 10% 8% 0% 8%;
+}
+
+h1, h4 {
+  font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+      font-size: 3rem;
+      font-weight: bold;
+}
+
+h4 {
+  font-size: 2rem;
+    margin-top: 58px;
+    font-weight: normal;
+}
+
+.container-head {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.container-title {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid #cccc;
+  margin-top: 50px;
+  font-family: 'Roboto', sans-serif;
+  padding: 3rem;
+}
+
+.title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.container-students {
+  display: flex;
+  flex-direction: column;
+  margin-top: 35px
+}
+
+.text-students {
+  font-family: 'Roboto', sans-serif;
+  font-size: 2rem;
+  padding: 3px;
+}
+
+.btn-login {
+  width: 300px;
+  border-radius: 5px;
+  border-style: none;
+  background-color: #07234D;
+  color: #fff;
+  height: 70px;
+  font-size: 35px;
+  margin-top: 6rem;
+  cursor: pointer;
+}
+
+footer {
+  position: absolute;
+  width: 100%;
+  height: 100px;
+  bottom: 0;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 1200px) {
+
+  .container-text {
+    padding: 2% 16% 0% 16%;
+  }
+
+    img {
+      width: 15%;
+    }
+
+    h1 {
+    font-size: 20px;
+  }
+
+  h4 {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+
+  .container-title {
+    margin-top: 22px;
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .container-students {
+    margin-top: 20px;
+  }
+  .text-students {
+    font-size: 1rem;
+  }
+  .btn-login {
+    width: 150px;
+    height: 40px;
+    font-size: 18px;
+    margin-top: 3rem;
+  }
+}

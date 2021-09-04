@@ -19,6 +19,8 @@ const char* mqtt_pass = "tesis_2021";
 //variables para crear mensaje y enviar por mqtt
 long lastMsg = 0;
 char msg[25];
+long lastMsgStates = 0;
+char msgStates[25];
 
 //Variables sensor de temperatura
 int temp = 0;
@@ -34,17 +36,17 @@ int soilMoistureValue = 0;
 int soilmoisturepercent=0;
 int delaySoilSensor = 1000;
 int pinBomba = 18;
-int statePump = 0;
+boolean state_pump;
 
 //variables servomotor
 int pos = 0;
 int servoPin = 13;
 int delayServo = 15;
-int stateWindow = 0;
+boolean state_window;
 
 //variables cooler
 int pinCooler = 15;
-int stateCooler = 0;
+boolean state_cooler;
 
 //creacion de objetos
 WiFiClient espClient;
@@ -102,7 +104,7 @@ void loop() {
 				delay(15);
 			}
 			Serial.println("ventana abierta");
-			stateWindow = 1;
+			state_window = true;
 
 	} else {
 			for (pos = 90; pos <= 90; pos += 1) {
@@ -110,7 +112,7 @@ void loop() {
 				delay(15);
 		 }
 		 Serial.println("Ventana cerrada");
-		 stateWindow = 0;
+		 state_window = false;
 	}
 
   //medicion humedad de suelo
@@ -121,12 +123,12 @@ void loop() {
   if (soilmoisturepercent < 40) { //porcentaje de hS para apagar la bomba
       Serial.println("seco, Prender bomba");
       digitalWrite(pinBomba, HIGH); // el pin 18 activa la alimentacion de la bomba
-      statePump = 1;
+      state_pump = true;
   }
   else if (soilmoisturepercent > 50) { //porcentaje de hSpara prender la bomba
       Serial.println("mojado, Apagar bomba");
       digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
-      statePump = 0;
+      state_pump = false;
   }
 
   if(soilmoisturepercent >= 100) {
@@ -147,11 +149,11 @@ void loop() {
 	if (hum < 60) {
 			Serial.println("cooler apagado");
 	    digitalWrite(pinCooler, HIGH);
-	    stateCooler = 0;
+	    state_cooler = false;
 	} else {
 			Serial.println("cooler prendido");
 			digitalWrite(pinCooler, LOW);
-			stateCooler = 1;
+			state_cooler = true;
 	}
 
 	//armado del mensaje y publicacion al topico values para recibirlos en el broker mqtt
@@ -160,9 +162,20 @@ void loop() {
 		lastMsg = now;
 		String to_send = String(temp) + "," + String(hum) + "," + String(soilmoisturepercent);
 		to_send.toCharArray(msg, 25);
-		Serial.print("Publicamos mensaje -> ");
+		Serial.print("Publicamos mensaje valores  -> ");
 		Serial.println(msg);
 		client.publish("values", msg);
+	}
+
+	//armado del mensaje y publicacion al topico valuesState para recibirlos en el broker mqtt
+	long nowState = millis();
+	if (nowState - lastMsgStates > 500){
+		lastMsgStates = nowState;
+		String to_send = String(state_window) + "," + String(state_cooler) + "," + String(state_pump);
+		to_send.toCharArray(msgStates, 25);
+		Serial.print("Publicamos mensaje estados -> ");
+		Serial.println(msgStates);
+		client.publish("valuesStates", msgStates);
 	}
 }
 
@@ -199,14 +212,18 @@ void callback(char* topic, byte* payload, unsigned int length){
 
 	if ( incoming == "bomba encendida") {
 		digitalWrite(pinBomba, HIGH);
+		state_pump = true;
 	} else {
 		digitalWrite(pinBomba, LOW);
+		state_pump = false;
 	}
 
   if ( incoming == "ventilacion encendida") {
 		digitalWrite(pinCooler, LOW);
+		state_cooler = true;
 	} else {
 		digitalWrite(pinCooler, HIGH);
+		state_cooler = false;
 	}
 
 	if ( incoming == "ventana abierta") {
@@ -214,11 +231,13 @@ void callback(char* topic, byte* payload, unsigned int length){
 				myservo.write(0);
 				delay(15);
 			}
+			state_window = true;
 	} else {
 			for (pos = 90; pos <= 90; pos += 1) {
 				myservo.write(90);
 				delay(15);
 		 }
+		 state_window = false;
 	}
 }
 

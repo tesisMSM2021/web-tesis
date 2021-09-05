@@ -34,14 +34,62 @@ h3 {
     margin-bottom: 0 !important;
 }
 
-#temp-alert {
+#alertVentana {
   display: none;
 }
 
-#hum-alert {
+#alertVentilacion {
   display: none;
 }
 
-#soil-alert {
+#alertRiego {
+  display: none;
+}
+
+#box-ventana {
+  display: block;
+}
+
+#box-cooler {
+  display: block;
+}
+
+#box-riego {
+  display: block;
+}
+
+#tempOP {
+  display: none;
+}
+
+#tempAC {
+  display: none;
+}
+
+#tempIN {
+  display: none;
+}
+
+#humOP {
+  display: none;
+}
+
+#humAC {
+  display: none;
+}
+
+#humIN {
+  display: none;
+}
+
+#humSOP {
+  display: none;
+}
+
+#humSAC {
+  display: none;
+}
+
+#humSIN {
   display: none;
 }

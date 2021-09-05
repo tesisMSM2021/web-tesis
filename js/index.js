@@ -62,37 +62,82 @@ function update_values(temp, hum, soilmoisturepercent){
     $("#display_hum").html(hum);
     $("#display_hum_soil").html(soilmoisturepercent);
 
-    //alertas automaticas
+    //alertas automaticas temperatura
 
-    if (temp >= 27) {
-          $('#temp-alert').css("display", "block");
-      } else
-          $('#temp-alert').css("display", "none");
+    var tempOptima = (temp >= 17 && temp <= 29);
+    var tempAceptable = (temp >= 9 && temp <= 16);
+    var tempInaceptable = (temp <= -1 && temp <= 8) || temp > 40;
+    var humOptima = hum >= 50 && hum <= 70;
+    var humAceptable = hum >= 31 && hum <= 49;
+    var humInaceptable = hum >= 71 && hum <= 100 || hum >= 0 && hum <= 30;
+    var humSOptima = soilmoisturepercent >= 50 && soilmoisturepercent <= 79;
+    var humSAceptable = soilmoisturepercent >= 60 && soilmoisturepercent <= 80;
+    var humSInaceptable = soilmoisturepercent < 40 || soilmoisturepercent >= 81 && soilmoisturepercent <= 100;
 
-    if (hum >= 60) {
-          $('#hum-alert').css("display", "block");
-      } else
-          $('#hum-alert').css("display", "none");
+    if (tempOptima) {
+        $('#tempOP').css("display", "block");
+    } else {
+        $('#tempOP').css("display", "none");
+    }
 
-    if (soilmoisturepercent <= 50) {
-          $('#soil-alert ').css("display", "block");
-      } else
-          $('#soil-alert ').css("display", "none");
+    if (tempAceptable) {
+        $('#tempAC').css("display", "block");
+    } else {
+        $('#tempAC').css("display", "none");
+    }
 
-    //alertas manuales
-
-    if(temp <=27) {
-        $('#temp-alert-manual').css("display", "none");
+    if (tempInaceptable) {
+        $('#tempIN').css("display", "block");
+        $('#alertVentana').css("display", "block");
+        $('#box-ventana').css("display", "none");
+    } else {
+        $('#tempIN').css("display", "none");
+        $('#alertVentana').css("display", "none");
         $('#box-ventana').css("display", "block");
     }
 
-    if(hum <=45) {
-        $('#hum-alert-manual').css("display", "none");
+    if (humOptima) {
+        $('#humOP').css("display", "block");
+    } else {
+        $('#humOP').css("display", "none");
+    }
+
+    if (humAceptable) {
+        $('#humAC').css("display", "block");
+    } else {
+        $('#humAC').css("display", "none");
+    }
+
+    if (humInaceptable) {
+        $('#humIN').css("display", "block");
+        $('#alertVentilacion').css("display", "block");
+        $('#box-cooler').css("display", "none");
+    } else {
+        $('#humIN').css("display", "none");
+        $('#alertVentilacion').css("display", "none");
         $('#box-cooler').css("display", "block");
     }
 
-    if(soilmoisturepercent <= 40) {
-        $('#soil-alert-manual').css("display", "none");
+    if (humSOptima) {
+        $('#humSOP').css("display", "block");
+    } else {
+        $('#humSOP').css("display", "none");
+    }
+
+    if (humSAceptable) {
+        $('#humSAC').css("display", "block");
+    } else {
+        $('#humSAC').css("display", "none");
+    }
+
+    if (humSInaceptable) {
+        $('#humSIN').css("display", "block");
+        $('#alertRiego').css("display", "block");
+        $('#box-riego').css("display", "none");
+
+    } else {
+        $('#humSIN').css("display", "none");
+        $('#alertRiego').css("display", "none");
         $('#box-riego').css("display", "block");
     }
 }

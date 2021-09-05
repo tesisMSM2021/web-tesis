@@ -97,9 +97,41 @@
       <!-- SECCION CENTRAL -->
 
       <div ui-view class="app-body" id="view">
-        <div class="padding">
+          <div class="padding">
+
+            <!-- CARDS CONDICIONES -->
+
+            <div class="row pb-4">
+                <div class="col-xs-6 col-sm-4">
+                  <ul class="list-group">
+                    <li class="list-group-item text-muted">Rangos de Temperatura Ambiente</li>
+                    <li class="list-group-item list-group-item-success">Optimo: 16,85 ºC <-> 29,85 ºC</li>
+                    <li class="list-group-item list-group-item-warning">Aceptable: 7,85 ºC <-> 39,85 ºC</li>
+                    <li class="list-group-item list-group-item-danger">Inaceptable: -0,15 ºC <-> 7,85 ºC  ó  > 40 ºC</li>
+                  </ul>
+                </div>
+
+                <div class="col-xs-6 col-sm-4">
+                  <ul class="list-group">
+                    <li class="list-group-item text-muted">Rangos de Humedad Ambiente</li>
+                    <li class="list-group-item list-group-item-success">Optimo: 40 % <-> 60 %</li>
+                    <li class="list-group-item list-group-item-warning">Aceptable: 60 % ºC <-> 80 %</li>
+                    <li class="list-group-item list-group-item-danger">Inaceptable: 0 % <-> 40 % ó 80 % <-> 100 %</li>
+                  </ul>
+                </div>
+
+                <div class="col-xs-6 col-sm-4">
+                  <ul class="list-group">
+                    <li class="list-group-item text-muted">Rangos de Humedad de Suelo</li>
+                    <li class="list-group-item list-group-item-success">Optimo: 50 % <-> 70 %</li>
+                    <li class="list-group-item list-group-item-warning">Aceptable: 60 % ºC <-> 85 %</li>
+                    <li class="list-group-item list-group-item-danger">Inaceptable: 0 % <-> 30 %  ó  85 % <-> 100 %</li>
+                  </ul>
+                </div>
+            </div>
 
             <!-- VALORES EN TIEMPO REAL -->
+
             <div class="row pb-4">
               <div class="col-xs-6 col-sm-4">
                 <div class="box p-a">
@@ -146,32 +178,72 @@
               </div>
             </div>
 
-            <!-- ALERTAS automaticas y manuales-->
+            <!-- RANGO ACTUAL -->
 
-            <div class="row pb-2">
-              <div id="temp-alert" class="col-xs-12 col-sm-12">
-                <div class="alert alert-warning" role="alert">
-                    La temperatura ha superado los 27 ªC. Las ventanas estan abiertas.
+            <div class="row">
+                <div class="col-xs-6 col-sm-4">
+                    <div id="tempOP" class="alert alert-success" role="alert">
+                      La temperatura se encuentra en un rango optimo.
+                    </div>
+                    <div id="tempAC" class="alert alert-warning" role="alert">
+                      La temperatura se encuentra en un rango aceptable.
+                    </div>
+                    <div id="tempIN" class="alert alert-danger" role="alert">
+                      La temperatura se encuentra en un rango inaceptable.
+                    </div>
                 </div>
-              </div>
-              <div id="hum-alert" class="col-xs-12 col-sm-12">
-                <div class="alert alert-warning" role="alert">
-                    La humedad es del 50 o más %. La ventilación esta encendida.
+
+                <div class="col-xs-6 col-sm-4">
+                  <div id="humOP" class="alert alert-success" role="alert">
+                    La humedad se encuentra en un rango optimo.
+                  </div>
+                  <div id="humAC" class="alert alert-warning" role="alert">
+                    La humedad se encuentra en un rango aceptable.
+                  </div>
+                  <div id="humIN" class="alert alert-danger" role="alert">
+                    La humedad se encuentra en un rango inaceptable.
+                  </div>
                 </div>
-              </div>
-              <div id="soil-alert" class="col-xs-12 col-sm-12">
-                <div class="alert alert-warning" role="alert">
-                    La humedad del suelo es inferior al 50 %. El riego está encendido.
+
+                <div class="col-xs-6 col-sm-4">
+                  <div id="humSOP" class="alert alert-success" role="alert">
+                    La humedad de suelo se encuentra en un rango optimo.
+                  </div>
+                  <div id="humSAC" class="alert alert-warning" role="alert">
+                    La humedad de suelo se encuentra en un rango aceptable.
+                  </div>
+                  <div id="humSIN" class="alert alert-danger" role="alert">
+                    La humedad de suelo se encuentra en un rango inaceptable.
+                  </div>
                 </div>
-              </div>
+            </div>
+
+            <!-- ALERTAS ACTUADORES-->
+
+            <div class="row pb-4">
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertVentana" class="alert alert-danger" role="alert">
+                        La ventana esta abierta.
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertVentilacion" class="alert alert-danger" role="alert">
+                        La Ventilación esta encendida.
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertRiego" class="alert alert-danger" role="alert">
+                        El riego esta encendido.
+                    </div>
+                </div>
             </div>
 
             <!-- SWItCHES -->
 
             <div class="row pb-4">
               <!-- SWItCH1 -->
-              <div class="col-xs-12 col-sm-4" id="box-ventana">
-                <div class="box p-a">
+              <div class="col-xs-12 col-sm-4">
+                <div class="box p-a" id="box-ventana">
                   <div class="form-group row">
                     <label class="col-sm-6 form-control-label text-muted">Abrir/cerrar ventana</label>
                     <div class="col-sm-6">
@@ -185,8 +257,8 @@
               </div>
 
                 <!-- SWItCH2 -->
-                <div class="col-xs-12 col-sm-4" id="box-cooler">
-                  <div class="box p-a">
+                <div class="col-xs-12 col-sm-4">
+                  <div class="box p-a" id="box-cooler">
                     <div class="form-group row">
                       <label class="col-sm-8 form-control-label text-muted">Prender/apagar ventilación</label>
                       <div class="col-sm-4">
@@ -200,8 +272,8 @@
                 </div>
 
                 <!-- SWItCH3 -->
-                <div class="col-xs-12 col-sm-4" id="box-riego">
-                  <div class="box p-a">
+                <div class="col-xs-12 col-sm-4">
+                  <div class="box p-a" id="box-riego">
                     <div class="form-group row">
                       <label class="col-sm-6 form-control-label text-muted">Prender/apagar riego</label>
                       <div class="col-sm-6">
@@ -305,6 +377,6 @@
     </div>
   </div>
   <?php require 'php/import-script.php' ?>
-  
+
 </body>
 </html>

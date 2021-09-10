@@ -63,10 +63,11 @@ client.on('message', function (topic, message) {
     var state_window = sp[0];
     var state_cooler = sp[1];
     var state_pump = sp[2];
+    var state_manual = sp[3];
 
     //hacemos la consulta para insertar....
 
-    var query = "INSERT INTO `admin_tesismsm`.`states` (`state_window`, `state_cooler`, `state_pump`) VALUES (" + state_window + ", " + state_cooler + ", " + state_pump + ")";
+    var query = "INSERT INTO `admin_tesismsm`.`states` (`state_window`, `state_cooler`, `state_pump`, `state_manual`) VALUES (" + state_window + ", " + state_cooler + ", " + state_pump + ", " + state_pump +")";
     con.query(query, function (err, result, fields) {
       if (err) throw err;
       console.log("Fila insertada de estados correctamente");

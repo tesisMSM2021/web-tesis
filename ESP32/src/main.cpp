@@ -1,6 +1,6 @@
 #include<Arduino.h>
 #include <WiFi.h> // libreria para conexion a wifi
-#include <PubSubClient.h> //librria para administrar topicos y protocolo mqtt
+#include <PubSubClient.h> //libreria para administrar topicos y protocolo mqtt
 #include "DHT.h" // libreria para administrar sensor dht11
 #include <ESP32Servo.h> //libreria para activar el servomotor
 
@@ -15,6 +15,14 @@ const int mqtt_port = 1883;
 //constantes conexion DB
 const char* mqtt_user = "web_client";
 const char* mqtt_pass = "tesis_2021";
+
+////////////////*******************variable para menejar el estado manual******
+//se inicializa en falso
+
+//variables globales
+boolean state_manual = false;
+
+////////////////*********************************************************
 
 //variables para crear mensaje y enviar por mqtt
 long lastMsg = 0;
@@ -98,21 +106,29 @@ void loop() {
   Serial.println(hum);
 
 	// apertura  y cierre de la ventana con el servo motor
-	if((temp >= 30 && temp <= 39) || temp > 40) {
-			for (pos = 90; pos >= 0; pos -= 1 ) {
-			myservo.write(0);
-				delay(15);
-			}
-			Serial.println("ventana abierta");
-			state_window = true;
 
-	} else if ((temp <= -1 && temp <= 8) || (temp >= 9 && temp <= 29)) {
-			for (pos = 90; pos <= 90; pos += 1) {
-			myservo.write(90);
-				delay(15);
-		 }
-		 Serial.println("Ventana cerrada");
-		 state_window = false;
+
+	//state manual arranca en 0 si entra en el loop nunca pasara por aca?????
+	//tanto para la ventana como la bomba como el cooler
+
+
+	if(state_manual) {
+		if(temp >= 30) {
+				for (pos = 90; pos >= 0; pos -= 1 ) {
+				myservo.write(0);
+					delay(15);
+				}
+				Serial.println("ventana abierta");
+				state_window = true;
+
+		} else if ((temp >= -1 && temp <= 29)) {
+				for (pos = 90; pos <= 90; pos += 1) {
+				myservo.write(90);
+					delay(15);
+			 }
+			 Serial.println("Ventana cerrada");
+			 state_window = false;
+		}
 	}
 
   //medicion humedad de suelo
@@ -120,44 +136,57 @@ void loop() {
   Serial.println(soilMoistureValue);
   soilmoisturepercent = map(soilMoistureValue, AirValue, WaterValue, 0, 100);
 
-  if (soilmoisturepercent < 40) { //porcentaje de hS para apagar la bomba
-      Serial.println("seco, Prender bomba");
-      digitalWrite(pinBomba, HIGH); // el pin 18 activa la alimentacion de la bomba
-      state_pump = true;
-  }
-  else if ((soilmoisturepercent >= 50) && (soilmoisturepercent <= 80)) { //porcentaje de hSpara prender la bomba
-      Serial.println("mojado, Apagar bomba");
-      digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
-      state_pump = false;
-  } if (soilmoisturepercent >= 81 && soilmoisturepercent <= 100) {
-		Serial.println("inundado, Apagar bomba");
-		digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
-		state_pump = false;
+
+
+	//state manual arranca en 0 si entra en el loop nunca pasara por aca?????
+	//tanto para la ventana como la bomba como el cooler
+
+
+
+	if(state_manual) {
+			if (soilmoisturepercent <= 60) { //porcentaje de hS para apagar la bomba
+		      Serial.println("seco, Prender bomba");
+		      digitalWrite(pinBomba, HIGH); // el pin 18 activa la alimentacion de la bomba
+		      state_pump = true;
+		  }
+		  if (soilmoisturepercent >= 65) {
+				Serial.println("inundado, Apagar bomba");
+				digitalWrite(pinBomba, LOW); // el pin 18 corta la alimentacion de la bomba
+				state_pump = false;
+			}
+
+		  if(soilmoisturepercent >= 100) {
+		    Serial.println("100 %");
+		  }
+
+		  else if(soilmoisturepercent <=0) {
+		    Serial.println("0 %");
+		  }
+
+		  else if(soilmoisturepercent >0 && soilmoisturepercent < 100) {
+		    Serial.print(soilmoisturepercent);
+		    Serial.println("%");
+		  }
+		    delay(delaySoilSensor);
 	}
 
-  if(soilmoisturepercent >= 100) {
-    Serial.println("100 %");
-  }
-
-  else if(soilmoisturepercent <=0) {
-    Serial.println("0 %");
-  }
-
-  else if(soilmoisturepercent >0 && soilmoisturepercent < 100) {
-    Serial.print(soilmoisturepercent);
-    Serial.println("%");
-  }
-    delay(delaySoilSensor);
-
 	//Prendido apagado del cooler segun la temperatura y humedad
-	if ((hum >= 0 && hum <= 49) || (hum >= 50 && hum <= 70) ) {
-			Serial.println("cooler apagado");
-	    digitalWrite(pinCooler, HIGH);
-	    state_cooler = false;
-	} else if (hum >= 71 && hum <= 100) {
-			Serial.println("cooler prendido");
-			digitalWrite(pinCooler, LOW);
-			state_cooler = true;
+
+
+	//state manual arranca en 0 si entra en el loop nunca pasara por aca?????
+	//tanto para la ventana como la bomba como el cooler
+
+
+	if(state_manual) {
+		if ((hum >= 40 && hum <= 75)) {
+				Serial.println("cooler apagado");
+		    digitalWrite(pinCooler, HIGH);
+		    state_cooler = false;
+		} else if ((hum >= 0 && hum <= 40) || (hum >= 76 && hum <= 100)) {
+				Serial.println("cooler prendido");
+				digitalWrite(pinCooler, LOW);
+				state_cooler = true;
+		}
 	}
 
 	//armado del mensaje y publicacion al topico values para recibirlos en el broker mqtt
@@ -172,10 +201,16 @@ void loop() {
 	}
 
 	//armado del mensaje y publicacion al topico valuesState para recibirlos en el broker mqtt
-	long nowState = millis();
+
+
+
+
+	// se agrega state manual al mensaje de estados para enviarlo al front
+
+
 	if (nowState - lastMsgStates > 500){
 		lastMsgStates = nowState;
-		String to_send = String(state_window) + "," + String(state_cooler) + "," + String(state_pump);
+		String to_send = String(state_window) + "," + String(state_cooler) + "," + String(state_pump) + "," + String(state_manual);
 		to_send.toCharArray(msgStates, 25);
 		Serial.print("Publicamos mensaje estados -> ");
 		Serial.println(msgStates);
@@ -255,9 +290,15 @@ void reconnect() {
 		if (client.connect(clientId.c_str(),mqtt_user,mqtt_pass)) {
 			Serial.println("Conectado!");
 			// Nos suscribimos al topico
+
+			//////////////////aca habria que cambiar el valor de state_manual a true
+			//7777 y hacer el timer countdown
+
+
 			client.subscribe("dispositivoServo");
 			client.subscribe("dispositivoBomba");
 			client.subscribe("dispositivoCooler");
+			state_manual = true;
 		} else {
 			Serial.print("falló :( con error -> ");
 			Serial.print(client.state());

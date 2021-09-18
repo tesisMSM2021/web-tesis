@@ -1,20 +1,14 @@
-/*
-******************************
-****** CONEXION *************
-******************************
-*/
+
 const options = {
-  clean: true, // retain session
-  connectTimeout: 4000, // Timeout period
-  // Authentication information
-  //clientId: 'emqx',
-  username: 'web_client',
-  password: 'tesis_2021',
+  clean: true,
+  connectTimeout: 4000,
+  username: 'your-emqx-user',
+  password: 'your-emqx-pass',
   keepalive:60,
   clean: true
 }
 
-const webSocket_URL = 'wss://tesismsm2021.ga:8094/mqtt';
+const webSocket_URL = 'your-url-web-sockets';
 
 const client = mqtt.connect(webSocket_URL, options)
 
@@ -30,7 +24,15 @@ client.on('connect', () => {
 
     client.subscribe('valuesStates', {qos: 0}, (error) => {
         if(!error) {
-            console.log('subscribe succes');
+            //console.log('subscribe succes');
+        } else {
+          console.log('subscribe fail');
+        }
+    })
+
+    client.subscribe('valuesStatesManual', {qos: 0}, (error) => {
+        if(!error) {
+            //console.log('subscribe succes');
         } else {
           console.log('subscribe fail');
         }
@@ -51,18 +53,6 @@ client.on('error', (error) => {
     console.log('error de conexion', error);
 })
 
-/*
-******************************
-****** PROCESOS  *************
-******************************
-
-
-
-
-*/
-//funcion time countdown para activar en el front
-////////////////////////
-///////////////
 function countdown( elementName, minutes, seconds ) {
     var element, endTime, hours, mins, msLeft, time;
 
@@ -98,12 +88,13 @@ function update_values(temp, hum, soilmoisturepercent){
     var tempOptima = (temp >= 17 && temp <= 29);
     var tempAceptable = (temp >= 9 && temp <= 16);
     var tempInaceptable = (temp <= -1 && temp <= 8) || temp > 39;
-    var humOptima = hum >= 40 && hum <= 60;
-    var humAceptable = hum >= 59 && hum <= 80;
-    var humInaceptable = hum >= 81 && hum <= 100 || hum >= 0 && hum <= 39;
-    var humSOptima = soilmoisturepercent >= 60 && soilmoisturepercent <= 80;
-    var humSAceptable = soilmoisturepercent >= 59 && soilmoisturepercent <= 50;
-    var humSInaceptable = soilmoisturepercent < 49 || soilmoisturepercent >= 81 && soilmoisturepercent <= 100;
+    var humOptima = hum >= 55 && hum <= 70;
+    var humAceptable = hum >= 60 && hum <= 80;
+    var humInaceptable = hum >= 81 && hum <= 100 || hum >= 0 && hum <= 59;
+    var humSOptima = soilmoisturepercent >= 50 && soilmoisturepercent <= 70;
+    var humSAceptable = soilmoisturepercent >= 75 && soilmoisturepercent <= 85;
+    var humSInaceptable = soilmoisturepercent < 49;
+    var humSInaceptableInundado = soilmoisturepercent >= 81 && soilmoisturepercent <= 105;
 
     if (tempOptima) {
         $('#tempOP').css("display", "block");
@@ -171,6 +162,16 @@ function update_values(temp, hum, soilmoisturepercent){
         $('#alertRiego').css("display", "none");
         $('#box-riego').css("display", "block");
     }
+
+    if(humSInaceptableInundado) {
+      //$('#alertRiego').css("display", "none");
+      $('#alertRiegoInundado').css("display", "block");
+      $('#box-riego').css("display", "none");
+
+    } else {
+      //$('#alertRiego').css("display", "block");
+      $('#alertRiegoInundado').css("display", "none")
+    }
 }
 
 function process_msg(topic, message){
@@ -184,8 +185,7 @@ function process_msg(topic, message){
   }
 }
 
-//se agrega la variable de estado manual en el front q viene del mensaje////////
-////////////////////////////////////////////////////////////
+//se agrega la variable de estado manual en el front q viene del mensaje
 function process_msg_states(topic, message){
   if (topic == "valuesStates"){
     var msg = message.toString();
@@ -193,8 +193,19 @@ function process_msg_states(topic, message){
     var state_window = sp[0];
     var state_cooler = sp[1];
     var state_pump = sp[2];
-    var state_manual = sp[3];
-    console.log(state_window, state_cooler, state_pump, state_manual);
+    console.log(state_window, state_cooler, state_pump );
+  }
+}
+
+//se agrega la variable de estado manual en el front q viene del mensaje manual
+function process_msg_statesManual(topic, message){
+  if (topic == "valuesStatesManual"){
+    var msg = message.toString();
+    var sp = msg.split(",");
+    var state_manual_ventana = sp[0];
+    var state_manual_cooler = sp[1];
+    var state_manual_bomba = sp[2];
+    console.log(state_manual_ventana, state_manual_cooler, state_manual_bomba );
   }
 }
 

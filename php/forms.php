@@ -16,7 +16,7 @@
       $password= sha1(strip_tags($_POST['password']));
 
       //momento de conectarnos a db servidor/usuario/passwor/nombreBD
-      $conn = mysqli_connect("localhost","admin_tesis2021","tesis_2021","admin_tesismsm");
+      $conn = mysqli_connect("your-server","your-user","your-pass","your-bd");
 
       if ($conn==false){
         echo "Hubo un problema al conectarse a María DB";
@@ -49,7 +49,7 @@
   //registro
 
   //momento de conectarnos a db
-  $conn = mysqli_connect("localhost","admin_tesis2021","tesis_2021","admin_tesismsm");
+  $conn = mysqli_connect("your-server","your-user","your-pass","your-bd");
 
   if ($conn==false){
     echo "Hubo un problema al conectarse a María DB";

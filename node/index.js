@@ -3,19 +3,19 @@ var mqtt = require('mqtt');
 
 //CREDENCIALES MYSQL
 var con = mysql.createConnection({
-  host:'tesismsm2021.ga',
-  user: 'admin_tesis2021',
-  password: 'tesis_2021',
-  dataBase: 'admin_tesismsm'
+  host:'your-domain',
+  user: 'your-user-dataBase',
+  password: 'your-user-pass-dataBase',
+  dataBase: 'your-database-name'
 });
 
 //CREDENCIALES MQTT
 var options = {
   port: 1883,
-  host: 'tesismsm2021.ga',
+  host: 'your-host',
   clientId: 'acces_control_server_' + Math.round(Math.random() * (0- 10000) * -1) ,
-  username: 'web_client',
-  password: 'tesis_2021',
+  username: 'your_EMQX_user',
+  password: 'your_EMQX_pass',
   keepalive: 60,
   reconnectPeriod: 1000,
   protocolId: 'MQIsdp',
@@ -24,7 +24,7 @@ var options = {
   encoding: 'utf8'
 };
 
-var client = mqtt.connect('mqtt://tesismsm2021.ga', options);
+var client = mqtt.connect('your_emqx_url', options);
 
 //SE REALIZA LA CONEXION
 client.on('connect', function () {
@@ -46,7 +46,7 @@ client.on('message', function (topic, message) {
 
     //hacemos la consulta para insertar....
 
-    var query = "INSERT INTO `admin_tesismsm`.`data` (`data_temp`, `data_hum`, `data_hum_soil`) VALUES (" + temp + ", " + hum + ", " + soilmoisturepercent + ")";
+    var query = "INSERT INTO `your_database`.`data` (`data_temp`, `data_hum`, `data_hum_soil`) VALUES (" + temp + ", " + hum + ", " + soilmoisturepercent + ")";
     con.query(query, function (err, result, fields) {
       if (err) throw err;
       console.log("Fila de valores de sensores insertada correctamente");
@@ -67,10 +67,29 @@ client.on('message', function (topic, message) {
 
     //hacemos la consulta para insertar....
 
-    var query = "INSERT INTO `admin_tesismsm`.`states` (`state_window`, `state_cooler`, `state_pump`, `state_manual`) VALUES (" + state_window + ", " + state_cooler + ", " + state_pump + ", " + state_pump +")";
+    var query = "INSERT INTO `your_database`.`states` (`state_window`, `state_cooler`, `state_pump`, `state_manual`) VALUES (" + state_window + ", " + state_cooler + ", " + state_pump + ", " + state_pump +")";
     con.query(query, function (err, result, fields) {
       if (err) throw err;
       console.log("Fila insertada de estados correctamente");
+    });
+  }
+});.
+
+client.on('message', function (topic, message) {
+  console.log("Mensaje recibido desde -> " + topic + " Mensaje -> " + message.toString());
+  if (topic == "valuesStatesManual"){
+    var msg = message.toString();
+    var sp = msg.split(",");
+    var state_manual_ventana = sp[0];
+    var state_manual_cooler = sp[1];
+    var state_manual_bomba = sp[2];
+
+    //hacemos la consulta para insertar....
+
+    var query = "INSERT INTO `your_database`.`state_manual` (`state_manual_ventana`, `state_manual_cooler`, `state_manual_bomba` ) VALUES ("+ state_manual_ventana + ", " + state_manual_cooler + ", " + state_manual_bomba + ")";
+    con.query(query, function (err, result, fields) {
+      if (err) throw err;
+      console.log("Fila insertada de estados manuales correctamente");
     });
   }
 });

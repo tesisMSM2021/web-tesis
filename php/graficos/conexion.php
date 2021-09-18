@@ -7,9 +7,9 @@
 		public $conexion;
 		public function __construct(){
 		  $this->servidor = "localhost";
-			$this->usuario = "admin_tesis2021";
-			$this->contrasena = "tesis_2021";
-			$this->basedatos = "admin_tesismsm";
+			$this->usuario = "your-user";
+			$this->contrasena = "your-pass";
+			$this->basedatos = "your-db";
 		}
 		function conectar(){
 			$this->conexion = new mysqli($this->servidor,$this->usuario,$this->contrasena,$this->basedatos);

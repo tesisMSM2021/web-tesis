@@ -114,9 +114,9 @@
                 <div class="col-xs-6 col-sm-4">
                   <ul class="list-group">
                     <li class="list-group-item text-muted">Rangos de Humedad Ambiente</li>
-                    <li class="list-group-item list-group-item-success">Optimo: 40 % <-> 60 %</li>
-                    <li class="list-group-item list-group-item-warning">Aceptable: 60 % ºC <-> 80 %</li>
-                    <li class="list-group-item list-group-item-danger">Inaceptable: 0 % <-> 40 % ó 80 % <-> 100 %</li>
+                    <li class="list-group-item list-group-item-success">Optimo: 60 % <-> 80 %</li>
+                    <li class="list-group-item list-group-item-warning">Aceptable: 60 % <-> 80 %</li>
+                    <li class="list-group-item list-group-item-danger">Inaceptable: 0 % <-> 59% ó 80 % <-> 100%</li>
                   </ul>
                 </div>
 
@@ -234,6 +234,32 @@
                 <div class="col-xs-6 col-sm-4">
                     <div id="alertRiego" class="alert alert-danger" role="alert">
                         El riego esta encendido.
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALERTAS ACTUADORES-->
+
+            <div class="row pb-4">
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertVentanaManual" class="alert alert-success" role="alert">
+                      <div class="clear">
+                        <h4 class="m-0 text-lg _300"><div id="ten-countdown"></div></h4>
+                      </div>
+                        La ventana se abrió manualmente. <br>
+                        Por seguridad se cerrará a los 10 minutos.
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertVentilacionManual" class="alert alert-success" role="alert">
+                      La ventilación se encendió manualmente. <br>
+                      Por seguridad se apagará a los 10 minutos.
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-4">
+                    <div id="alertRiegoManual" class="alert alert-success" role="alert">
+                      El riego se encendió manualmente. <br>
+                      Por seguridad se apagará a los 10 minutos.
                     </div>
                 </div>
             </div>
@@ -376,7 +402,11 @@
      </div>
     </div>
   </div>
-  <?php require 'php/import-script.php' ?>
 
+    <?php require 'php/import-script.php' ?>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/graficos/indexChart.js"></script>
 </body>
 </html>

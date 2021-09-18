@@ -34,6 +34,14 @@ h3 {
     margin-bottom: 0 !important;
 }
 
+#ten-countdown {
+    display: inline;
+    font-family: Verdana, sans-serif, Arial;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
 #alertVentana {
   display: none;
 }
@@ -92,4 +100,16 @@ h3 {
 
 #humSIN {
   display: none;
+}
+
+#alertVentanaManual  {
+    display: none;
+}
+
+#alertVentilacionManual {
+    display: none;
+}
+
+#alertRiegoManual {
+    display: none;
 }

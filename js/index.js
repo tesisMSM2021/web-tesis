@@ -1,20 +1,14 @@
-/*
-******************************
-****** CONEXION *************
-******************************
-*/
+
 const options = {
-  clean: true, // retain session
-  connectTimeout: 4000, // Timeout period
-  // Authentication information
-  //clientId: 'emqx',
-  username: 'web_client',
-  password: 'tesis_2021',
+  clean: true,
+  connectTimeout: 4000,
+  username: 'your-emqx-user',
+  password: 'your-emqx-pass',
   keepalive:60,
   clean: true
 }
 
-const webSocket_URL = 'wss://tesismsm2021.ga:8094/mqtt';
+const webSocket_URL = 'your-url-web-sockets';
 
 const client = mqtt.connect(webSocket_URL, options)
 
@@ -30,7 +24,15 @@ client.on('connect', () => {
 
     client.subscribe('valuesStates', {qos: 0}, (error) => {
         if(!error) {
-            // console.log('subscribe succes');
+            //console.log('subscribe succes');
+        } else {
+          console.log('subscribe fail');
+        }
+    })
+
+    client.subscribe('valuesStatesManual', {qos: 0}, (error) => {
+        if(!error) {
+            //console.log('subscribe succes');
         } else {
           console.log('subscribe fail');
         }
@@ -51,11 +53,30 @@ client.on('error', (error) => {
     console.log('error de conexion', error);
 })
 
-/*
-******************************
-****** PROCESOS  *************
-******************************
-*/
+function countdown( elementName, minutes, seconds ) {
+    var element, endTime, hours, mins, msLeft, time;
+
+    function twoDigits( n ) {
+        return (n <= 9 ? "0" + n : n);
+    }
+
+    function updateTimer() {
+        msLeft = endTime - (+new Date);
+        if ( msLeft < 1000 ) {
+            element.innerHTML = "Time is up!";
+        } else {
+            time = new Date( msLeft );
+            hours = time.getUTCHours();
+            mins = time.getUTCMinutes();
+            element.innerHTML = (hours ? hours + ':' + twoDigits( mins ) : mins) + ':' + twoDigits( time.getUTCSeconds() );
+            setTimeout( updateTimer, time.getUTCMilliseconds() + 500 );
+        }
+    }
+
+    element = document.getElementById( elementName );
+    endTime = (+new Date) + 1000 * (60*minutes + seconds) + 500;
+    updateTimer();
+}
 
 function update_values(temp, hum, soilmoisturepercent){
     $("#display_temp").html(temp);
@@ -66,13 +87,14 @@ function update_values(temp, hum, soilmoisturepercent){
 
     var tempOptima = (temp >= 17 && temp <= 29);
     var tempAceptable = (temp >= 9 && temp <= 16);
-    var tempInaceptable = (temp <= -1 && temp <= 8) || temp > 40;
-    var humOptima = hum >= 50 && hum <= 70;
-    var humAceptable = hum >= 31 && hum <= 49;
-    var humInaceptable = hum >= 71 && hum <= 100 || hum >= 0 && hum <= 30;
-    var humSOptima = soilmoisturepercent >= 50 && soilmoisturepercent <= 79;
-    var humSAceptable = soilmoisturepercent >= 60 && soilmoisturepercent <= 80;
-    var humSInaceptable = soilmoisturepercent < 40 || soilmoisturepercent >= 81 && soilmoisturepercent <= 100;
+    var tempInaceptable = (temp <= -1 && temp <= 8) || temp > 39;
+    var humOptima = hum >= 55 && hum <= 70;
+    var humAceptable = hum >= 60 && hum <= 80;
+    var humInaceptable = hum >= 81 && hum <= 100 || hum >= 0 && hum <= 59;
+    var humSOptima = soilmoisturepercent >= 50 && soilmoisturepercent <= 70;
+    var humSAceptable = soilmoisturepercent >= 75 && soilmoisturepercent <= 85;
+    var humSInaceptable = soilmoisturepercent < 49;
+    var humSInaceptableInundado = soilmoisturepercent >= 81 && soilmoisturepercent <= 105;
 
     if (tempOptima) {
         $('#tempOP').css("display", "block");
@@ -140,6 +162,16 @@ function update_values(temp, hum, soilmoisturepercent){
         $('#alertRiego').css("display", "none");
         $('#box-riego').css("display", "block");
     }
+
+    if(humSInaceptableInundado) {
+      //$('#alertRiego').css("display", "none");
+      $('#alertRiegoInundado').css("display", "block");
+      $('#box-riego').css("display", "none");
+
+    } else {
+      //$('#alertRiego').css("display", "block");
+      $('#alertRiegoInundado').css("display", "none")
+    }
 }
 
 function process_msg(topic, message){
@@ -153,6 +185,7 @@ function process_msg(topic, message){
   }
 }
 
+//se agrega la variable de estado manual en el front q viene del mensaje
 function process_msg_states(topic, message){
   if (topic == "valuesStates"){
     var msg = message.toString();
@@ -160,7 +193,39 @@ function process_msg_states(topic, message){
     var state_window = sp[0];
     var state_cooler = sp[1];
     var state_pump = sp[2];
-    console.log(state_window, state_cooler, state_pump);
+    console.log(state_window, state_cooler, state_pump );
+  }
+}
+
+//se agrega la variable de estado manual en el front q viene del mensaje manual
+function process_msg_statesManual(topic, message){
+  if (topic == "valuesStatesManual"){
+    var msg = message.toString();
+    var sp = msg.split(",");
+    var state_manual_ventana = sp[0];
+    var state_manual_cooler = sp[1];
+    var state_manual_bomba = sp[2];
+    console.log(state_manual_ventana, state_manual_cooler, state_manual_bomba );
+  }
+}
+
+function switch_ventana(){
+  if ($('#input_servo').is(":checked")){
+    console.log("La ventana esta abierta");
+    client.publish('dispositivoServo', 'ventana abierta', (error) => {
+      console.log(error || 'Mensaje enviado!!!')
+    })
+    //muestra el alert q dice que la ventana fue abierta manualmente
+    ///cuando se clickea el switch switch
+    $('#alertVentanaManual').css("display", "block");
+    //llama a la funcion countdown de 10 min
+    countdown( "ten-countdown", 10, 0 );
+  }else{
+    console.log("La ventana esta cerrada");
+    client.publish('dispositivoServo', 'ventana cerrada', (error) => {
+      console.log(error || 'Mensaje enviado!!!')
+    })
+    $('#alertVentanaManual').css("display", "none");
   }
 }
 
@@ -187,20 +252,6 @@ function switch_cooler(){
   }else{
     console.log("La bomba de agua esta apagada");
     client.publish('dispositivoCooler', 'ventilacion apagada', (error) => {
-      console.log(error || 'Mensaje enviado!!!')
-    })
-  }
-}
-
-function switch_ventana(){
-  if ($('#input_servo').is(":checked")){
-    console.log("La ventana esta abierta");
-    client.publish('dispositivoServo', 'ventana abierta', (error) => {
-      console.log(error || 'Mensaje enviado!!!')
-    })
-  }else{
-    console.log("La ventana esta cerrada");
-    client.publish('dispositivoServo', 'ventana cerrada', (error) => {
       console.log(error || 'Mensaje enviado!!!')
     })
   }
